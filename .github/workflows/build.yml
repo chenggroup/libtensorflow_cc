@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        cuda-version: ['11.8.0', '11.7.1', '11.3.1', '10.1.243']
+        cuda-version: ['11.8.0', '11.7.1', '11.3.1']
     steps:
     - uses: actions/checkout@v2
       with:
@@ -33,13 +33,6 @@ jobs:
       run: |
         pip install numpy wheel
         pip install keras_preprocessing --no-deps
-    - name: Install Bazelisk
-      uses: bazelbuild/setup-bazelisk@v2
-    - name: Mount bazel cache  # Optional
-      uses: actions/cache@v3
-      with:
-        path: "~/.cache/bazel"
-        key: bazel
     - uses: Jimver/cuda-toolkit@v0.2.10
       id: cuda-toolkit
       with:
@@ -49,6 +42,13 @@ jobs:
         echo "Installed cuda version is: ${{ steps.cuda-toolkit.outputs.cuda }}"
         echo "Cuda install location: ${{ steps.cuda-toolkit.outputs.CUDA_PATH }}"
         nvcc -V
+    - name: Install Bazelisk
+      uses: bazelbuild/setup-bazelisk@v2
+    - name: Mount bazel cache  # Optional
+      uses: actions/cache@v3
+      with:
+        path: "~/.cache/bazel"
+        key: bazel
     - name: Build libtensorflow_cc
       run: |
         cd libtensorflow_cc
