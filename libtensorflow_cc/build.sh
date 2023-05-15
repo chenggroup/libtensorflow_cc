@@ -4,12 +4,12 @@ set -ex
 
 
 export PREFIX=/usr/local
-export SRC_DIR=/tensorflow
+export SRC_DIR=../tensorflow
 export cuda_compiler_version=None
 curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.11.0/bazelisk-linux-amd64 --output $PREFIX/bin/bazel
 chmod +x $PREFIX/bin/bazel
 
-git clone https://github.com/tensorflow/tensorflow $SRC_DIR -b v2.8.0 --depth 1
+git clone https://github.com/tensorflow/tensorflow $SRC_DIR -b v${TF_VERSION} --depth 1
 
 cd $SRC_DIR
 
@@ -121,11 +121,7 @@ rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/exte
 rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_protobuf/src/google/ $SRC_DIR/libtensorflow_cc_output/include/google/
 rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_absl/absl/ $SRC_DIR/libtensorflow_cc_output/include/absl/
 pushd $SRC_DIR/libtensorflow_cc_output
-  tar cf ../libtensorflow_cc_output.tar .
+  tar cf ../../libtensorflow_cc_v${TF_VERSION}.tar.gz .
 popd
 chmod -R u+rw $SRC_DIR/libtensorflow_cc_output
 rm -r $SRC_DIR/libtensorflow_cc_output
-
-tar -C ${PREFIX} -xf $SRC_DIR/libtensorflow_cc_output.tar
-rm -rf $SRC_DIR
-rm -rf ~/.cache
