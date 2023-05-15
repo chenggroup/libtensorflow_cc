@@ -6,7 +6,7 @@ export PREFIX=/usr/local
 export SRC_DIR=../tensorflow
 export CUDA_VERSION=
 
-git clone https://github.com/tensorflow/tensorflow $SRC_DIR -b v${TF_VERSION} --depth 1
+git clone https://github.com/tensorflow/tensorflow $SRC_DIR -b ${TF_VERSION} --depth 1
 
 cd $SRC_DIR
 
