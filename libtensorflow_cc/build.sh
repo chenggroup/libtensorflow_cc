@@ -2,12 +2,9 @@
 
 set -ex
 
-
 export PREFIX=/usr/local
 export SRC_DIR=../tensorflow
-export cuda_compiler_version=None
-curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.11.0/bazelisk-linux-amd64 --output $PREFIX/bin/bazel
-chmod +x $PREFIX/bin/bazel
+export CUDA_VERSION=
 
 git clone https://github.com/tensorflow/tensorflow $SRC_DIR -b v${TF_VERSION} --depth 1
 
@@ -36,7 +33,6 @@ BUILD_OPTS="
     --verbose_failures
     --config=opt
 	--config=mkl
-    --define=PREFIX=${PREFIX}
     --config=noaws
 	--copt=-mtune=generic
 	--local_ram_resources=2048
@@ -82,12 +78,24 @@ if [[ ${cuda_compiler_version} != "None" ]]; then
         export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,compute_75
     elif [[ ${cuda_compiler_version} == 11.0* ]]; then
         export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,sm_80,compute_80
-    elif [[ ${cuda_compiler_version} == 11.1 ]]; then
+    elif [[ ${cuda_compiler_version} == 11.1* ]]; then
         export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,sm_80,sm_86,compute_86
-    elif [[ ${cuda_compiler_version} == 11.2 ]]; then
+    elif [[ ${cuda_compiler_version} == 11.2* ]]; then
         export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,sm_80,sm_86,compute_86
-    elif [[ ${cuda_compiler_version} == 11.3 ]]; then
+    elif [[ ${cuda_compiler_version} == 11.3* ]]; then
         export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,sm_80,sm_86,compute_86
+    elif [[ ${cuda_compiler_version} == 11.4* ]]; then
+        export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,sm_80,sm_86,sm_87,compute_87
+    elif [[ ${cuda_compiler_version} == 11.5* ]]; then
+        export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,sm_80,sm_86,sm_87,compute_87
+    elif [[ ${cuda_compiler_version} == 11.6* ]]; then
+        export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,sm_80,sm_86,sm_87,compute_87
+    elif [[ ${cuda_compiler_version} == 11.7* ]]; then
+        export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,sm_80,sm_86,sm_87,compute_87
+    elif [[ ${cuda_compiler_version} == 11.8* ]]; then
+        export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,sm_80,sm_86,sm_87,sm_89,compute_89
+    elif [[ ${cuda_compiler_version} == 12.0* ]]; then
+        export TF_CUDA_COMPUTE_CAPABILITIES=sm_35,sm_50,sm_60,sm_62,sm_70,sm_72,sm_75,sm_80,sm_86,sm_87,sm_89,sm_90,sm_90a,compute_90a
     else
         echo "unsupported cuda version."
         exit 1
@@ -120,8 +128,3 @@ rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/exte
 rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/external/eigen_archive/unsupported/ $SRC_DIR/libtensorflow_cc_output/include/unsupported/
 rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_protobuf/src/google/ $SRC_DIR/libtensorflow_cc_output/include/google/
 rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_absl/absl/ $SRC_DIR/libtensorflow_cc_output/include/absl/
-pushd $SRC_DIR/libtensorflow_cc_output
-  tar cf ../../libtensorflow_cc_v${TF_VERSION}.tar.gz .
-popd
-chmod -R u+rw $SRC_DIR/libtensorflow_cc_output
-rm -r $SRC_DIR/libtensorflow_cc_output
